@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Chatbot</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #ece5dd;
+        }
+        .chat-container {
+            width: 400px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 10px gray;
+        }
+        .bot {
+            background-color: #f1f0f0;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .user {
+            background-color: #dcf8c6;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 8px;
+        }
+        button {
+            padding: 8px;
+            background-color: #25D366;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="bot">
+        👋 Hello! Enter Register Number to see student performance.
+    </div>
+
+    {% if response %}
+    <div class="user">
+        {{ request.form.register_number }}
+    </div>
+    <div class="bot">
+        {{ response|safe }}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+        <input type="text" name="register_number" placeholder="Enter Register Number" required>
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+</body>
+</html>
