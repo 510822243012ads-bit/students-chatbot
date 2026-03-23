@@ -1,32 +1,38 @@
-from flask import Flask, render_template, request
-import csv
+import streamlit as st
+import pandas as pd
 
-app = Flask(__name__)
+st.set_page_config(page_title="Student Performance Bot")
 
-def get_student_data(register_number):
-    with open('students.csv', newline='') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            if row['RegisterNumber'] == register_number:
-                return row
-    return None
+# 1. Load the data
+@st.cache_data
+def load_data():
+    # Make sure students.csv is in the same folder as app.py
+    df = pd.read_csv("student_chatbot/students.csv") 
+    df['Reg. Number'] = df['Reg. Number'].astype(str)
+    return df
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    response = ""
-    if request.method == "POST":
-        reg_no = request.form["register_number"]
-        student = get_student_data(reg_no)
-        if student:
-            response = f"""
-            Name: {student['Name']}<br>
-            Attendance: {student['Attendance']}%<br>
-            GPA: {student['GPA']}<br>
-            Result: {student['Result']}
-            """
+try:
+    df = load_data()
+
+    st.title("🎓 Staff Assistant Bot")
+    st.write("Enter a Name or Reg Number to see student details.")
+
+    # 2. Chat Input
+    query = st.text_input("Search Student:", "").strip().upper()
+
+    if query:
+        # Search logic
+        result = df[(df['Reg. Number'] == query) | 
+                    (df['Name of the Student'].str.upper().str.contains(query, na=False))]
+
+        if not result.empty:
+            student = result.iloc[0]
+            st.success(f"Found: {student['Name of the Student']}")
+            st.write(f"**Parent Name:** {student['Parent Name']}")
+            st.write(f"**Phone:** {student['Parent Phone No']}")
+            st.write(f"**Address:** {student['Communication Address']}")
         else:
-            response = "Student not found!"
-    return render_template("chat.html", response=response)
+            st.error("No student found. Please check the spelling or Reg No.")
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8501)
+except Exception as e:
+    st.error(f"Error loading CSV: Please check if students.csv is in the folder. {e}")
