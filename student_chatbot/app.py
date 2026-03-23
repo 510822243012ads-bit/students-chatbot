@@ -7,7 +7,7 @@ st.set_page_config(page_title="Student Performance Bot")
 @st.cache_data
 def load_data():
     # Make sure students.csv is in the same folder as app.py
-    df = pd.read_csv("student_chatbot/students.csv") 
+    df = pd.read_csv("students.csv") 
     df['Reg. Number'] = df['Reg. Number'].astype(str)
     return df
 
